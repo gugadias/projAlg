@@ -9,8 +9,10 @@ public class Backtracking {
 								      Integer xAtual,Integer yAtual, Boolean mvr, Boolean verifAdiante,
 								      Integer dim) {
 		
-		if(todasCorretamentePreenchidas(matrizVariaveis,dim))
+		if(todasCorretamentePreenchidas(matrizVariaveis,dim)) {
+			imprimeResultado(matrizVariaveis,dim);
 			return true;
+		}
 		
 		Integer valorAtual = recebeProximoValor(matrizVariaveis[xAtual][yAtual]);
 		
@@ -20,8 +22,10 @@ public class Backtracking {
 		}
 		
 		if(restricoesRespeitadas(matrizVariaveis, restricoes, xAtual, yAtual, valorAtual,dim)) {//verifica se respeita as restricoes
-			if(xAtual == dim-1 && yAtual == dim-1)
+			if(xAtual == dim-1 && yAtual == dim-1) {
+				imprimeResultado(matrizVariaveis,dim);
 				return true;
+			}
 			
 			if(mvr) {
 				String proxIndice;
@@ -45,7 +49,18 @@ public class Backtracking {
 			}
 			return preencheComRestricoes(matrizVariaveis,restricoes,xAtual,yAtual,mvr,verifAdiante,dim);
 		}
+		System.out.println("Nao foi possivel solucionar o problema");
 		return false;
+	}
+	
+	public void imprimeResultado(Variavel[][] matrizVariaveis, Integer dim) {
+		for(int i =0;i < dim;i++) {
+			
+			for(int j = 0;j < dim;j++)
+				System.out.print(matrizVariaveis[i][j].getValorAtual()+" ");
+
+			System.out.println();
+		}
 	}
 	
 	public String escolheProximoIndice(Variavel[][] matrizVariaveis, Restricao[] restricoes,

@@ -1,6 +1,8 @@
 package br.usp.principal;
 
 import java.util.Scanner;
+
+import br.usp.operacoes.Backtracking;
 import br.usp.util.*;
 
 
@@ -13,6 +15,7 @@ public class Principal {
 		Integer indCasos= 0;
 		Variavel matrizVariaveis[][];
 		Restricao restricoes[];
+		Boolean mvr = false, adiante = false;
 		
 		Scanner leitor = new Scanner(System.in);
 		
@@ -41,6 +44,9 @@ public class Principal {
 				restricoes[i].setX2(leitor.nextInt());
 				restricoes[i].setY2(leitor.nextInt());
 			}
+			
+			Backtracking back = new Backtracking();
+			back.preencheComRestricoes(matrizVariaveis, restricoes, 0, 0, mvr, adiante, dim);
 		}
 		leitor.close();
 	}
