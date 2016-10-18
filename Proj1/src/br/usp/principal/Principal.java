@@ -33,20 +33,25 @@ public class Principal {
 			for(int i = 0;i < dim;i++) {//le as linhas
 				for(int j = 0; j < dim; j++) {
 					matrizVariaveis[i][j] = new Variavel(dim);
-					matrizVariaveis[i][j].setValorAtual(leitor.nextInt()); //popula a matriz das variaveis
+					Integer atu = leitor.nextInt();
+					matrizVariaveis[i][j].setValorAtual(atu); //popula a matriz das variaveis
+					if(atu != 0) {
+						matrizVariaveis[i][j].getValoresDisponiveis().clear();
+						matrizVariaveis[i][j].getValoresDisponiveis().add(atu);
+					}
 				}
 			}
 			
 			for(int i = 0;i<rest;i++){
 				restricoes[i] = new Restricao(0,0,0,0);
-				restricoes[i].setX1(leitor.nextInt());
-				restricoes[i].setY1(leitor.nextInt());
-				restricoes[i].setX2(leitor.nextInt());
-				restricoes[i].setY2(leitor.nextInt());
+				restricoes[i].setX1(leitor.nextInt()-1);
+				restricoes[i].setY1(leitor.nextInt()-1);
+				restricoes[i].setX2(leitor.nextInt()-1);
+				restricoes[i].setY2(leitor.nextInt()-1);
 			}
 			
 			Backtracking back = new Backtracking();
-			back.preencheComRestricoes(matrizVariaveis, restricoes, 0, 0, mvr, adiante, dim);
+			back.preencheComRestricoes(matrizVariaveis, restricoes, 0, 0, false, true, dim);
 		}
 		leitor.close();
 	}

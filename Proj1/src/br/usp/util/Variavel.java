@@ -6,7 +6,7 @@ public class Variavel {
 
 	private ArrayList<Integer> valoresDisponiveis;
 	private Integer valorAtual;
-	
+
 	public void excluiValor(Integer valor) {
 		valoresDisponiveis.remove(valor);
 	}
@@ -33,7 +33,6 @@ public class Variavel {
 	public Variavel(Integer dimensao) {
 		this.valorAtual = 0;
 		this.valoresDisponiveis = new ArrayList<Integer>();
-		
 		setaLista(dimensao);
 	}
 	

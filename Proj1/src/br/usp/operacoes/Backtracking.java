@@ -14,43 +14,72 @@ public class Backtracking {
 			return true;
 		}
 		
-		Integer valorAtual = recebeProximoValor(matrizVariaveis[xAtual][yAtual]);
-		
-		if(verifAdiante) {
-			if(verificacaoAdiante(matrizVariaveis, restricoes, xAtual, yAtual, valorAtual))
-				return false;
-		}
-		
-		if(restricoesRespeitadas(matrizVariaveis, restricoes, xAtual, yAtual, valorAtual,dim)) {//verifica se respeita as restricoes
-			if(xAtual == dim-1 && yAtual == dim-1) {
-				imprimeResultado(matrizVariaveis,dim);
-				return true;
-			}
-			
-			if(mvr) {
-				String proxIndice;
-				proxIndice = escolheProximoIndice(matrizVariaveis,restricoes,mvr, dim);
-				String[] aux = proxIndice.split(",");
-				xAtual = Integer.parseInt(aux[0]);
-				yAtual = Integer.parseInt(aux[1]);
-			}
-			else {
-				if(xAtual == dim-1) {
-					yAtual++;
+		for(Integer valorAtual : matrizVariaveis[xAtual][yAtual].getValoresDisponiveis()) {
+			if(restricoesRespeitadas(matrizVariaveis, restricoes, xAtual, yAtual, valorAtual,dim)) {//verifica se respeita as restricoes
+				
+				if(verifAdiante) {
+					if(!verificacaoAdiante(matrizVariaveis, restricoes, xAtual, yAtual, valorAtual)){
+						matrizVariaveis[xAtual][yAtual].setValorAtual(0);
+						resetaRestricoes(matrizVariaveis,xAtual,yAtual,valorAtual,dim);
+						return false;
+					}
 				}
-				else if (yAtual == dim-1) {
-					xAtual++;
-					yAtual = 0;
+				
+				matrizVariaveis[xAtual][yAtual].setValorAtual(valorAtual);
+				
+				if(xAtual == dim-1 && yAtual == dim-1 && !mvr) {
+					imprimeResultado(matrizVariaveis,dim);
+					return true;
+				}
+				
+				int xProx = xAtual,yProx = yAtual;
+				if(mvr) {
+					String proxIndice;
+					proxIndice = escolheProximoIndice(matrizVariaveis, dim);
+					String[] aux = proxIndice.split(",");
+					xProx = Integer.parseInt(aux[0]);
+					yProx = Integer.parseInt(aux[1]);
 				}
 				else {
-					xAtual++;
-					yAtual++;
+					if(xAtual == dim-1) {
+						yProx = yAtual+1;
+					}
+					else if (yAtual == dim-1) {
+						xProx = xAtual+1;
+						yProx = 0;
+					}
+					else {
+						yProx = yAtual+1;
+					}
+				}
+				Boolean retorno = preencheComRestricoes(matrizVariaveis,restricoes,xProx,yProx,mvr,verifAdiante,dim);
+				if(retorno)
+					return true;
+				else {
+					matrizVariaveis[xAtual][yAtual].setValorAtual(0);
+					
+					if(verifAdiante)
+						resetaRestricoes(matrizVariaveis,xAtual,yAtual,valorAtual,dim);
 				}
 			}
-			return preencheComRestricoes(matrizVariaveis,restricoes,xAtual,yAtual,mvr,verifAdiante,dim);
 		}
-		System.out.println("Nao foi possivel solucionar o problema");
 		return false;
+	}
+	
+	public void resetaRestricoes(Variavel[][] matrizVariaveis, Integer xAtual, Integer yAtual,Integer valorAtual, Integer dim) {
+		for(int j = 0;j < dim;j++) {
+			if(matrizVariaveis[xAtual][j].getValorAtual() == 0) {
+				if(!matrizVariaveis[xAtual][j].getValoresDisponiveis().contains(valorAtual))
+					matrizVariaveis[xAtual][j].getValoresDisponiveis().add(valorAtual);
+			}
+		}
+		
+		for(int i = 0; i< dim;i++) {
+			if(matrizVariaveis[i][yAtual].getValorAtual() == 0) {
+				if(!matrizVariaveis[i][yAtual].getValoresDisponiveis().contains(valorAtual))
+					matrizVariaveis[i][yAtual].getValoresDisponiveis().add(valorAtual);
+			}
+		}
 	}
 	
 	public void imprimeResultado(Variavel[][] matrizVariaveis, Integer dim) {
@@ -61,15 +90,15 @@ public class Backtracking {
 
 			System.out.println();
 		}
+		System.out.println();
 	}
 	
-	public String escolheProximoIndice(Variavel[][] matrizVariaveis, Restricao[] restricoes,
-									   Boolean mvr, Integer dim) {
+	public String escolheProximoIndice(Variavel[][] matrizVariaveis,Integer dim) {
 		Integer menorValoresDisponiveis = dim+1;
 		Integer xMaior = 0,yMaior = 0;
 		
 		for(int i = 0; i < dim;i++) {
-			for(int j = 0; j < dim;i++)
+			for(int j = 0; j < dim;j++)
 			{
 				if(matrizVariaveis[i][j].getValorAtual() == 0) {
 					if(matrizVariaveis[i][j].getValoresDisponiveis().size() < menorValoresDisponiveis) {
@@ -123,7 +152,7 @@ public class Backtracking {
 	
 	public Boolean todasCorretamentePreenchidas(Variavel[][] matrizVariaveis, Integer dim) {
 		for(int i = 0; i < dim;i++) {
-			for(int j = 0; j < dim;i++) {
+			for(int j = 0; j < dim;j++) {
 				if(matrizVariaveis[i][j].getValorAtual() == 0)
 					return false;
 			}
