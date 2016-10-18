@@ -42,17 +42,20 @@ public class Variavel {
 		this.valoresDisponiveis = valoresDisponiveis;
 		this.valorAtual = valorAtual;
 	}
+	
 	public ArrayList<Integer> getValoresDisponiveis() {
 		return valoresDisponiveis;
 	}
+	
 	public void setValoresDisponiveis(ArrayList<Integer> valoresDisponiveis) {
 		this.valoresDisponiveis = valoresDisponiveis;
 	}
+	
 	public Integer getValorAtual() {
 		return valorAtual;
 	}
+	
 	public void setValorAtual(Integer valorAtual) {
 		this.valorAtual = valorAtual;
 	}
-	
 }
