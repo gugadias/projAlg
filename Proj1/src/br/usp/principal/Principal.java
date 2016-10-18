@@ -36,6 +36,7 @@ public class Principal {
 			}
 			
 			for(int i = 0;i<rest;i++){
+				restricoes[i] = new Restricao(0,0,0,0);
 				restricoes[i].setX1(leitor.nextInt());
 				restricoes[i].setY1(leitor.nextInt());
 				restricoes[i].setX2(leitor.nextInt());

@@ -78,4 +78,24 @@ public class Backtracking {
 		
 		return false;
 	}
+	
+	public Boolean verificacaoAdiante(Variavel[][] matrizVariaveis, Restricao[] restricoes,
+									Integer xAtual, Integer yAtual, Integer valorAtual){
+		for(int i = 0; i < matrizVariaveis.length; i++){
+			if(matrizVariaveis[i][yAtual].getValorAtual() == 0){
+				matrizVariaveis[i][yAtual].excluiValor(valorAtual);
+				if(matrizVariaveis[i][yAtual].listaVazia()) return false;
+				//se alguma lista de disponiveis estiver vazia, retorna false
+			}
+		}
+		for(int i = 0; i < matrizVariaveis.length; i++){
+			if(matrizVariaveis[xAtual][i].getValorAtual() == 0){
+				matrizVariaveis[xAtual][i].excluiValor(valorAtual);
+				if(matrizVariaveis[xAtual][i].listaVazia()) return false;
+				//se alguma lista de disponiveis estiver vazia, retorna false
+			}
+		}
+		return true;
+	}
+	
 }

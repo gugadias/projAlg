@@ -17,6 +17,10 @@ public class Variavel {
 		setaLista(dim);
 	}
 	
+	public Boolean listaVazia(){
+		return valoresDisponiveis.isEmpty();
+	}
+	
 	public void setaLista(Integer dimensao) {
 		if(this.valoresDisponiveis == null)
 			this.valoresDisponiveis = new ArrayList<Integer>();
