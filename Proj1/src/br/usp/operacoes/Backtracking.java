@@ -1,5 +1,8 @@
 package br.usp.operacoes;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import br.usp.util.Restricao;
@@ -7,50 +10,66 @@ import br.usp.util.Variavel;
 
 public class Backtracking {
 
+	//funcao do backtracking
 	public boolean preencheComRestricoes(Variavel[][] matrizVariaveis, Restricao[] restricoes,
 								      Integer xAtual,Integer yAtual, Boolean mvr, Boolean verifAdiante,
-								      Integer dim) {
-		imprimeResultado(matrizVariaveis, dim);
+								      Integer dim, Integer quantasInt, PrintWriter escreveArquivo) throws FileNotFoundException {
+		
+		//verifica se terminou
 		if(todasCorretamentePreenchidas(matrizVariaveis,dim)) {
-			imprimeResultado(matrizVariaveis,dim);
+			imprimeResultado(matrizVariaveis,dim,quantasInt,escreveArquivo);
 			return true;
 		}
-		
+		//auxiliar para verificacao adiante
 		Boolean corretoAux = true; 
 		
+		//loop
 		for(Integer valorAtual : matrizVariaveis[xAtual][yAtual].getValoresDisponiveis()) {
+			//soma de interacoes
+			quantasInt++;
+			
+			//verifica se o proximo valor respeita as restricoes
 			if(restricoesRespeitadas(matrizVariaveis, restricoes, xAtual, yAtual, valorAtual,dim)) {//verifica se respeita as restricoes
 				
+				//seta na matriz
 				matrizVariaveis[xAtual][yAtual].setValorAtual(valorAtual);
 				
+				//verifica se acabou
 				if(todasCorretamentePreenchidas(matrizVariaveis,dim)) {
-					imprimeResultado(matrizVariaveis,dim);
+					imprimeResultado(matrizVariaveis,dim, quantasInt,escreveArquivo);
 					return true;
 				}
 				
+				//verificacao adiante
 				if(verifAdiante) 
 					corretoAux = verificacaoAdiante(matrizVariaveis, restricoes, xAtual, yAtual, valorAtual); 
-					
+				
+				//caso alguma lista ficou vazia pela verificação adiante
 				if(!corretoAux) {
 					matrizVariaveis[xAtual][yAtual].setValorAtual(0);
+					//metodo que vai resetar as listas de disponiveis
 					resetaRestricoes(matrizVariaveis,xAtual,yAtual,restricoes,valorAtual,dim);
 				}
 				else {
-						
+					
+					//se acabou
 					if(xAtual == dim-1 && yAtual == dim-1 && !mvr) {
-						imprimeResultado(matrizVariaveis,dim);
+						imprimeResultado(matrizVariaveis,dim,quantasInt, escreveArquivo);
 						return true;
 					}
-						
+					
+					//verificará qual o proximo a ser escolhido
 					int xProx = xAtual,yProx = yAtual;
 					if(mvr) {
 						String proxIndice;
+						//metodo do mvr
 						proxIndice = escolheProximoIndice(matrizVariaveis, dim);
 						String[] aux = proxIndice.split(",");
 						xProx = Integer.parseInt(aux[0]);
 						yProx = Integer.parseInt(aux[1]);
 					}
 					else {
+						//proximo valor normal
 						if(xAtual == dim-1) {
 							yProx = yAtual+1;
 						}
@@ -62,11 +81,14 @@ public class Backtracking {
 							yProx = yAtual+1;
 						}
 					}
-					Boolean retorno = preencheComRestricoes(matrizVariaveis,restricoes,xProx,yProx,mvr,verifAdiante,dim);
+					//retorno do backtracking
+					Boolean retorno = preencheComRestricoes(matrizVariaveis,restricoes,xProx,yProx,mvr,verifAdiante,dim,quantasInt,escreveArquivo);
 					if(retorno)
 						return true;
 					else {
-						matrizVariaveis[xAtual][yAtual].setValorAtual(0);		
+						//caso nao deu certo, testa com os outros valores
+						matrizVariaveis[xAtual][yAtual].setValorAtual(0);
+						//no caso de verificacao adiante, reseta as restricoes para ir para o proximo valor
 						if(verifAdiante)
 							resetaRestricoes(matrizVariaveis,xAtual,yAtual,restricoes,valorAtual,dim);
 					}
@@ -76,6 +98,7 @@ public class Backtracking {
 		return false;
 	}
 	
+	//metodo que resetara as listas de disponiveis para os adjacentes e para os restritivos do valoratual
 	public void resetaRestricoes(Variavel[][] matrizVariaveis, Integer xAtual, Integer yAtual,
 								 Restricao[] restricoes, Integer valorAtual, Integer dim) {
 		for(int j = 0;j < dim;j++) {
@@ -99,7 +122,7 @@ public class Backtracking {
 				for(Integer c : nova) {
 					if(restricoesRespeitadas(matrizVariaveis, restricoes, r.getX2(), r.getY2(), c, dim) &&
 					   !matrizVariaveis[r.getX2()][r.getY2()].getValoresDisponiveis().contains(c))
-						matrizVariaveis[r.getX2()][r.getX2()].getValoresDisponiveis().add(c);
+						matrizVariaveis[r.getX2()][r.getY2()].getValoresDisponiveis().add(c);
 				}
 			}
 			else if (r.getX2() == xAtual && r.getY2() == yAtual) {
@@ -114,17 +137,21 @@ public class Backtracking {
 		}
 	}
 	
-	public void imprimeResultado(Variavel[][] matrizVariaveis, Integer dim) {
+	// metodo que imprime o resultado
+	public void imprimeResultado(Variavel[][] matrizVariaveis, Integer dim, Integer quantasInt, PrintWriter escreveArquivo) throws FileNotFoundException {
 		for(int i =0;i < dim;i++) {
 			
 			for(int j = 0;j < dim;j++)
-				System.out.print(matrizVariaveis[i][j].getValorAtual()+" ");
+				escreveArquivo.print(matrizVariaveis[i][j].getValorAtual()+" ");
 
-			System.out.println();
+			escreveArquivo.println();
 		}
-		System.out.println();
+		escreveArquivo.println();
+		escreveArquivo.println("Foram realizadas: "+quantasInt+" atribuições");
+		escreveArquivo.flush();
 	}
 	
+	//metodo do mvr
 	public String escolheProximoIndice(Variavel[][] matrizVariaveis,Integer dim) {
 		Integer menorValoresDisponiveis = dim+1;
 		Integer xMaior = 0,yMaior = 0;
@@ -144,10 +171,7 @@ public class Backtracking {
 		return xMaior +","+ yMaior;
 	}
 	
-	public Integer recebeProximoValor(Variavel varAtual) {
-		return varAtual.getValoresDisponiveis().remove(0);
-	}
-	
+	//funcao que verifica se dado um valor e uma posicao, as restricoes serao respeitadas
 	public Boolean restricoesRespeitadas(Variavel[][] matrizVariaveis, Restricao[] restricoes,
 								      Integer xAtual,Integer yAtual, Integer valorAtual, Integer dim) {
 		for(int j = 0;j < dim;j++) {
@@ -182,6 +206,7 @@ public class Backtracking {
 		return true; //todas as restricoes estao sendo respeitadas;
 	}
 	
+	//verifica se esta tudo preenchido
 	public Boolean todasCorretamentePreenchidas(Variavel[][] matrizVariaveis, Integer dim) {
 		for(int i = 0; i < dim;i++) {
 			for(int j = 0; j < dim;j++) {
@@ -192,6 +217,7 @@ public class Backtracking {
 		return true;
 	}
 	
+	//rotina para a verificacao adiante
 	public Boolean verificacaoAdiante(Variavel[][] matrizVariaveis, Restricao[] restricoes,
 									Integer xAtual, Integer yAtual, Integer valorAtual){
 		//bloco que tira o valorAtual dos adjacentes na matriz
@@ -210,7 +236,7 @@ public class Backtracking {
 			}
 		}
 		
-		//bloco que tira os valores de restricao dos valores remanescentes
+		//bloco que tira os valores possiveis de acordo com as restrições de maior/menor
 		for(Restricao r : restricoes) {
 			if(r.getX1() == xAtual && r.getY1() == yAtual && matrizVariaveis[r.getX2()][r.getY2()].getValorAtual() == 0) {
 				matrizVariaveis[r.getX2()][r.getY2()].removeValores(valorAtual,false);

@@ -1,5 +1,8 @@
 package br.usp.principal;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 import br.usp.operacoes.Backtracking;
@@ -8,16 +11,18 @@ import br.usp.util.*;
 
 public class Principal {
 
-	public static void main(String[] args)
+	public static void main(String[] args) throws FileNotFoundException
 	{
 		Integer nCasosTeste = 0;
 		Integer dim, rest;
 		Integer indCasos= 0;
 		Variavel matrizVariaveis[][];
 		Restricao restricoes[];
-		Boolean mvr = false, adiante = false;
-		
-		Scanner leitor = new Scanner(System.in);
+		Boolean mvr = true, //flag para controle de mvr
+				adiante = true; //flag para controle de adiante
+		File arquivoSaida = new File("saida.dat");
+		PrintWriter escreveArquivo = new PrintWriter(arquivoSaida);
+		Scanner leitor = new Scanner(new File("entrada.dat"));
 		
 		nCasosTeste = leitor.nextInt(); //leitura de quantos casos de teste terão.
 		
@@ -42,6 +47,7 @@ public class Principal {
 				}
 			}
 			
+			//le as restricoes
 			for(int i = 0;i<rest;i++){
 				restricoes[i] = new Restricao(0,0,0,0);
 				restricoes[i].setX1(leitor.nextInt()-1);
@@ -51,7 +57,13 @@ public class Principal {
 			}
 			
 			Backtracking back = new Backtracking();
-			back.preencheComRestricoes(matrizVariaveis, restricoes, 0, 0, false, true, dim);
+			escreveArquivo.println("Caso de teste: "+(indCasos+1)+", Resposta:");
+			long start = System.currentTimeMillis(); //calcula o inicio
+			back.preencheComRestricoes(matrizVariaveis, restricoes, 0, 0, mvr, adiante, dim, 0, escreveArquivo);
+			long elapsed = System.currentTimeMillis() - start; //calcula o fim - inicio
+			escreveArquivo.println(String.format("%02d segundos/%02d milisegundos", elapsed/1000,elapsed));
+			escreveArquivo.println();
+			escreveArquivo.flush();
 		}
 		leitor.close();
 	}
