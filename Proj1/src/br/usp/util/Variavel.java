@@ -11,6 +11,39 @@ public class Variavel {
 		valoresDisponiveis.remove(valor);
 	}
 	
+	public void removeValores(Integer valorAtual, Boolean maior) {
+		ArrayList<Integer> copia = new  ArrayList<Integer>();
+		for(Integer i : valoresDisponiveis)
+			copia.add(i);
+		for(Integer i : copia) {
+			if(!maior && i < valorAtual)
+				valoresDisponiveis.remove(i);
+			else if(maior && i > valorAtual)
+				valoresDisponiveis.remove(i);
+		}
+	}
+	
+	public ArrayList<Integer> listaNova(Integer dim, Integer valorAtual, Boolean maior) {
+		ArrayList<Integer> nova = new ArrayList<Integer>();
+		for(int i = 1;i <= dim; i++) {
+			if(maior && i > valorAtual)
+				nova.add(i);
+			else if(!maior && i < valorAtual)
+				nova.add(i);
+		}
+		return nova;
+	}
+	
+	public void adicionaValores(Integer valorAtual, Boolean maior) {
+		ArrayList<Integer> copia = valoresDisponiveis;
+		for(Integer i : copia) {
+			if(!maior && i < valorAtual)
+				valoresDisponiveis.remove(i);
+			else if(maior && i > valorAtual)
+				valoresDisponiveis.remove(i);
+		}
+	}
+	
 	public void resetaLista() {
 		Integer dim = valoresDisponiveis.size(); 
 		valoresDisponiveis.clear();
